@@ -1,0 +1,43 @@
+﻿@model SteamWeb.ViewModels.Games.Index
+@using SteamWeb.ViewModels.Games
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+<table class = "table">
+    <thead>
+        <tr>
+            <th>
+                Title
+            </th>
+            <th>
+                Price
+            </th>
+            <th>
+                Release Date
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(GameItem item in Model.Games)
+        {
+            <tr>
+                <td>
+                    @item.Title
+                </td>
+                <td>
+                    $@item.Price
+                </td>
+                <td>
+                    @item.ReleaseDate.ToShortDateString()
+                </td>
+                <td>
+                    <a asp-controller = "Games" asp-action="Delete" asp-route-game="@item.game"> Delete </a>
+                </td>
+            </tr>
+
+        }
+    </tbody>
+</table>

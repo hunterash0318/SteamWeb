@@ -17,6 +17,6 @@ namespace SteamWeb.ViewModels.Games
         public decimal Price { get; set; }
         public DateTime ReleaseDate { get; set; }
 
-        public Game game { get; set; }
+        public int Id { get; set; }
     }
 }

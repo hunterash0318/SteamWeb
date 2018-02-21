@@ -31,13 +31,31 @@ namespace SteamWeb.Controllers
                     Title = game.Title,
                     Price = game.Price,
                     ReleaseDate = game.ReleaseDate,
-                    game = game
+                    Id = game.Id
                 });
 
             return View(new Index
             {
                 Games = GameItems
             });
+        }
+
+        public ActionResult Detail(int Id)
+        {
+            Game game = _session.Query<Game>()
+                .Where(g => g.Id == Id)
+                .SingleOrDefault();
+            GameDetail detail = new GameDetail
+            {
+                Title = game.Title,
+                Developer = game.Developer,
+                Description = game.Description,
+                Genre = game.Genre,
+                Price = game.Price,
+                ReleaseDate = game.ReleaseDate,
+
+            };
+            return View(detail);
         }
 
         [HttpGet]
@@ -65,18 +83,20 @@ namespace SteamWeb.Controllers
 
         //Problems with delete
         [HttpGet]
-        public ActionResult Delete(Game g)
+        public ActionResult Delete(int Id)
         {
-
-            return View(g);
+            Game maybeGame = _session.Query<Game>()
+                .Where(g => g.Id == Id)
+                .SingleOrDefault();
+            _session.Delete(maybeGame);
+            return View(maybeGame);
         }
 
         [HttpPost, ActionName("Delete")]
         public ActionResult ConfirmDelete(Game game)
         {
-            string title = game.Title;
             _session.Delete(game);
-            ViewData["error"] = $"Successfully deleted  {title}";
+            ViewData["error"] = "Successfully deleted";
 
             return View();
         }

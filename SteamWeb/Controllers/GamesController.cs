@@ -130,6 +130,14 @@ namespace SteamWeb.Controllers
         [HttpPost, ActionName("Edit")]
         public ActionResult ConfirmEdit(Edit editedGame, int Id)
         {
+            Game maybeGame = _session.Query<Game>()
+                .Where(g => g.Title == editedGame.Title)
+                .SingleOrDefault();
+            if(maybeGame != null)
+            {
+                ViewData["error"] = "Error: A game with that title already exists";
+                return View();
+            }
             Game game = _session.Get<Game>(Id);
             using (var txn = _session.BeginTransaction())
             {

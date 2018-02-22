@@ -36,7 +36,7 @@
             @Html.DisplayFor(model => model.Genre)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Price)
+            $ @Html.DisplayNameFor(model => model.Price)
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Price)
@@ -50,7 +50,6 @@
     </dl>
     
     <form asp-action="Delete">
-        <div>@ViewData["error"]</div>
         <input type ="hidden" asp-for="Id"/>
         <input type="submit" value="Delete" class="btn btn-default" /> |
         <a asp-action="Index">Back to List</a>

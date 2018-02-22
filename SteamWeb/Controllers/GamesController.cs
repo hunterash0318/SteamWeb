@@ -65,13 +65,22 @@ namespace SteamWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult Add(Game game)
+        public ActionResult Add(Add add)
         {
             Game maybeGame = _session.Query<Game>()
-                .Where(g => g.Title == game.Title)
+                .Where(g => g.Title == add.Title)
                 .SingleOrDefault();
             if(maybeGame == null)
             {
+                Game game = new Game
+                {
+                    Title = add.Title,
+                    Developer = add.Developer,
+                    Description = add.Description,
+                    Genre = add.Genre,
+                    Price = add.Price,
+                    ReleaseDate = add.ReleaseDate
+                };
                 _session.Save(game);
                 ViewData["error"] = "Game successfully added!";
                 return View();
@@ -80,8 +89,6 @@ namespace SteamWeb.Controllers
             return View();
         }
 
-
-        //Problems with delete
         [HttpGet]
         public ActionResult Delete(int Id)
         {
@@ -92,13 +99,50 @@ namespace SteamWeb.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        public ActionResult ConfirmDelete(Game game)
+        public ActionResult ConfirmDelete(int Id)
         {
-            _session.Delete(game);
-            ViewData["error"] = "Successfully deleted";
-
+            using (var txn = _session.BeginTransaction())
+            {
+                Game game = _session.Get<Game>(Id);
+                _session.Delete(game);
+                txn.Commit();
+            }
             return RedirectToAction("Index");
         }
-        
+
+        [HttpGet]
+        public ActionResult Edit(int Id)
+        {
+            Game game = _session.Get<Game>(Id);
+            Edit edit = new Edit
+            {
+                Id = game.Id,
+                Title = game.Title,
+                Developer = game.Developer,
+                Description = game.Description,
+                Genre = game.Genre,
+                Price = game.Price,
+                ReleaseDate = game.ReleaseDate,
+            };
+            return View(edit);
+        }
+
+        [HttpPost, ActionName("Edit")]
+        public ActionResult ConfirmEdit(Edit editedGame, int Id)
+        {
+            Game game = _session.Get<Game>(Id);
+            using (var txn = _session.BeginTransaction())
+            {
+                game.Title = editedGame.Title;
+                game.Developer = editedGame.Developer;
+                game.Description = editedGame.Description;
+                game.Genre = editedGame.Genre;
+                game.Price = editedGame.Price;
+                game.ReleaseDate = editedGame.ReleaseDate;
+                _session.SaveOrUpdate(game);
+                txn.Commit();
+            }
+            return RedirectToAction("Index");
+        }
     }
 }

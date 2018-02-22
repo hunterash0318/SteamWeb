@@ -85,11 +85,10 @@ namespace SteamWeb.Controllers
         [HttpGet]
         public ActionResult Delete(int Id)
         {
-            Game maybeGame = _session.Query<Game>()
+            Game game = _session.Query<Game>()
                 .Where(g => g.Id == Id)
                 .SingleOrDefault();
-            _session.Delete(maybeGame);
-            return View(maybeGame);
+            return View(game);
         }
 
         [HttpPost, ActionName("Delete")]
@@ -98,7 +97,7 @@ namespace SteamWeb.Controllers
             _session.Delete(game);
             ViewData["error"] = "Successfully deleted";
 
-            return View();
+            return RedirectToAction("Index");
         }
         
     }

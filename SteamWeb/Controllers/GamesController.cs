@@ -67,6 +67,10 @@ namespace SteamWeb.Controllers
         [HttpPost]
         public ActionResult Add(Add add)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(add);
+            }
             Game maybeGame = _session.Query<Game>()
                 .Where(g => g.Title == add.Title)
                 .SingleOrDefault();
@@ -85,7 +89,7 @@ namespace SteamWeb.Controllers
                 ViewData["error"] = "Game successfully added!";
                 return View();
             }
-            ViewData["error"] = "Error: A game with that title already exists";
+            ModelState.AddModelError("Title", "Error: A game with that title already exists.");
             return View();
         }
 
@@ -130,6 +134,11 @@ namespace SteamWeb.Controllers
         [HttpPost, ActionName("Edit")]
         public ActionResult ConfirmEdit(Edit editedGame, int Id)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(editedGame);
+            }
+
             Game maybeGame = _session.Query<Game>()
                 .Where(g => g.Title == editedGame.Title)
                 .SingleOrDefault();

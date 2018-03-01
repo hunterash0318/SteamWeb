@@ -2,23 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace SteamWeb.ViewModels.Games
 {
     public class Edit
     {
-        public virtual int  Id { get; set; }
+        public int  Id { get; set; }
 
-        public virtual string Title { get; set; }
+        [Required]
+        public string Title { get; set; }
 
-        public virtual string Developer { get; set; }
+        [Required]
+        public string Developer { get; set; }
 
-        public virtual string Description { get; set; }
+        [Required]
+        public string Description { get; set; }
 
-        public virtual string Genre { get; set; }
+        [Required]
+        public string Genre { get; set; }
 
-        public virtual decimal Price { get; set; }
+        [Required]
+        public decimal Price { get; set; }
 
-        public virtual DateTime ReleaseDate { get; set; }
+        [Required]
+        public DateTime ReleaseDate { get; set; }
     }
 }

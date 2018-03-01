@@ -11,6 +11,8 @@ namespace SteamWeb.Models
 
         public virtual string Username { get; set; }
 
+        public virtual string Password { get; set; }
+
         public virtual bool AddPermissions { get; set; }
 
         public virtual bool EditPermissions { get; set; }

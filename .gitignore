@@ -1,3 +1,7 @@
 .vs/*
 SteamWeb/bin/*
 SteamWeb/obj/*
+FluentMigrations/bin/*
+FluentMigrations/obj/*
+packages/*
+Migrate_Up.bat

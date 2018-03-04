@@ -132,22 +132,25 @@ namespace SteamWeb.Controllers
         }
 
         [HttpPost, ActionName("Edit")]
-        public ActionResult ConfirmEdit(Edit editedGame, int Id)
+        public ActionResult ConfirmEdit(Edit editedGame)
         {
             if (!ModelState.IsValid)
             {
                 return View(editedGame);
             }
 
+            // [Ryan]: Here, we need to make sure that there is not already another game with the same title but different ID.
+            // If we just checked for games with the same title, we would find the one that we are currently editing!!
             Game maybeGame = _session.Query<Game>()
-                .Where(g => g.Title == editedGame.Title)
+                .Where(g => g.Title == editedGame.Title && g.Id != editedGame.Id)
                 .SingleOrDefault();
             if(maybeGame != null)
             {
+                //TODO: Use ModelState.AddModelError here to add a model error to the Title field!
                 ViewData["error"] = "Error: A game with that title already exists";
                 return View();
             }
-            Game game = _session.Get<Game>(Id);
+            Game game = _session.Get<Game>(editedGame.Id);
             using (var txn = _session.BeginTransaction())
             {
                 game.Title = editedGame.Title;

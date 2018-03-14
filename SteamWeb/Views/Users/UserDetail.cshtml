@@ -1,0 +1,47 @@
+﻿@model SteamWeb.ViewModels.Users.UserDetail
+
+@{
+    ViewData["Title"] = "Detail";
+}
+
+<h2>Detail</h2>
+
+<div>
+    @*<h4>GameDetail</h4>*@
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Username)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Username)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Bio)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Bio)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Wallet)
+        </dt>
+        <dd>
+            $@Html.DisplayFor(model => model.Wallet)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Location)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Location)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Password)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Password)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="IndexUser">Back to List</a>
+</div>

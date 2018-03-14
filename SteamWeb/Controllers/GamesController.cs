@@ -8,6 +8,7 @@ using SteamWeb.Models;
 using NHibernate;
 using NHibernate.Linq;
 using SteamWeb.ViewModels.Games;
+using SteamWeb.ViewModels.Users;
 
 
 namespace SteamWeb.Controllers
@@ -20,6 +21,9 @@ namespace SteamWeb.Controllers
         {
             _session = session;
         }
+
+
+
         // GET: Game
         public ActionResult Index()
         {

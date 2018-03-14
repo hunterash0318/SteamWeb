@@ -1,0 +1,52 @@
+﻿@model SteamWeb.ViewModels.Users.IndexUser
+@using SteamWeb.ViewModels.Users
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h2>Users</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Username
+            </th>
+            <th>
+                Bio
+            </th>
+            <th>
+                Wallet
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (UserItem item in Model.Users)
+        {
+            <tr>
+                <td>
+                    @item.Username
+                </td>
+                <td>
+                    @item.Bio
+                </td>
+                <td>
+                    $@item.Wallet
+                </td>
+                <td>
+                    <a asp-controller="Users" asp-action="DeleteUser" asp-route-id="@item.Id"> Delete </a>
+                </td>
+                <td>
+                    <a asp-controller="Users" asp-action="UserDetail" asp-route-id="@item.Id"> Details </a>
+                </td>
+                @*
+                <td>
+                    <a asp-controller="Users" asp-action="Edit" asp-route-id="@item.Id"> Edit </a>
+                </td>
+                *@
+            </tr>
+
+        }
+    </tbody>
+</table>

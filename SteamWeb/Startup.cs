@@ -33,6 +33,19 @@ namespace SteamWeb
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
+            // New code for adding session state (cookies)
+            /*
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.HttpOnly = true;
+            });
+            */
+            // End session state code
+
             container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
 
             services.AddSingleton<IControllerActivator>(new SimpleInjectorControllerActivator(container));
@@ -49,6 +62,10 @@ namespace SteamWeb
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            // New code
+            //app.UseSession();
+            // End new code
+
             if (env.IsDevelopment())
             {
                 app.UseBrowserLink();
@@ -75,7 +92,7 @@ namespace SteamWeb
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Games}/{action=Index}/{id?}");
+                    template: "{controller=Login}/{action=Login}/{id?}");
             });
 
 

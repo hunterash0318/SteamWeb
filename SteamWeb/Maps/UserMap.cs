@@ -19,7 +19,10 @@ namespace SteamWeb.Maps
             Map(u => u.Location).Nullable();
             Map(u => u.Password).Not.Nullable();
             //Problems here
-            HasManyToMany(u => u.GamesOwned);
+            HasManyToMany(u => u.GamesOwned)
+                .Table("GameOwnerships")
+                .ParentKeyColumn("UserId")
+                .ChildKeyColumn("GameId");
             HasManyToMany(u => u.Friends)
                 .Table("UserRelationships")
                 .ParentKeyColumn("UserId1")

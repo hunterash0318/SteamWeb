@@ -27,6 +27,10 @@ namespace SteamWeb.Controllers
         // GET: Game
         public ActionResult Index()
         {
+            
+            ViewData["Title"] = "Index";
+            ViewData["header"] = "Index";
+            
             IEnumerable<Game> AllGames = _session.Query<Game>();
 
             IEnumerable<GameItem> GameItems = AllGames.Select(game =>
@@ -39,6 +43,26 @@ namespace SteamWeb.Controllers
                 });
 
             return View(new Index
+            {
+                Games = GameItems
+            });
+        }
+
+        public ActionResult UserGames(int Id)
+        {
+            User user = _session.Get<User>(Id);
+            ViewData["header"] = user.Username + "'s Library";
+            IEnumerable<Game> gamesOwned = user.GamesOwned;
+            IEnumerable<GameItem> GameItems = gamesOwned.Select(game =>
+                new GameItem
+                {
+                    Title = game.Title,
+                    Price = game.Price,
+                    ReleaseDate = game.ReleaseDate,
+                    Id = game.Id
+                });
+
+            return View("Index", new Index
             {
                 Games = GameItems
             });

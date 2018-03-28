@@ -83,6 +83,7 @@ namespace SteamWeb.Controllers
                 .SingleOrDefault();
             UserDetail detail = new UserDetail
             {
+                Id = user.Id,
                 Username = user.Username,
                 Wallet = user.Wallet,
                 Bio = user.Bio,

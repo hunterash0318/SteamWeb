@@ -12,7 +12,7 @@ using SteamWeb.ViewModels.Users;
 
 namespace SteamWeb.Controllers
 {
-    public class LoginController : Controller
+    public class AccountController : Controller
     {
         [HttpGet]
         public IActionResult Login()

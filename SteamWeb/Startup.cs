@@ -14,7 +14,8 @@ using SimpleInjector.Lifestyles;
 using SimpleInjector.Integration.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.AspNetCore.Mvc.Controllers;
-
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 namespace SteamWeb
 {
     public class Startup
@@ -49,6 +50,15 @@ namespace SteamWeb
             container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
 
             services.AddSingleton<IControllerActivator>(new SimpleInjectorControllerActivator(container));
+
+            // New cookie stuff
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = new PathString("Account/Login");
+                });
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             // NOTE: View Components are a new thing in ASP.NET Core MVC, I'm not sure how I should be using them yet.
             services.AddSingleton<IViewComponentActivator>(new SimpleInjectorViewComponentActivator(container));
@@ -92,7 +102,7 @@ namespace SteamWeb
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Login}/{action=Login}/{id?}");
+                    template: "{controller=Account}/{action=Login}/{id?}");
             });
 
 

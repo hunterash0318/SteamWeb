@@ -18,6 +18,7 @@ namespace SteamWeb.Maps
             Map(u => u.Wallet).Not.Nullable();
             Map(u => u.Location).Nullable();
             Map(u => u.Password).Not.Nullable();
+            Map(u => u.IsAdmin).Not.Nullable();
             //Problems here
             HasManyToMany(u => u.GamesOwned)
                 .Table("GameOwnerships")

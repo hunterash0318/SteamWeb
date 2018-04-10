@@ -21,6 +21,8 @@ namespace SteamWeb.ViewModels.Users
 
         public virtual string Password { get; set; }
 
+        public virtual bool IsAdmin { get; set; }
+
         public virtual IEnumerable<Game> GamesOwned { get; set; }
 
         public virtual IEnumerable<User> Friends { get; set; }

@@ -46,6 +46,7 @@ namespace SteamWeb.Controllers
                     Wallet = add.Wallet,
                     Location = add.Location,
                     Password = add.Password,
+                    IsAdmin = add.IsAdmin,
                     GamesOwned = Enumerable.Empty<Game>(),
                     Friends = Enumerable.Empty<User>()
                 };
@@ -89,6 +90,7 @@ namespace SteamWeb.Controllers
                 Bio = user.Bio,
                 Location = user.Location,
                 Password = user.Password,
+                IsAdmin = user.IsAdmin
 
             };
             return View(detail);

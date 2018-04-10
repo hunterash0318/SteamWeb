@@ -23,5 +23,7 @@ namespace SteamWeb.ViewModels.Users
 
         [Required]
         public virtual string Password { get; set; }
+
+        public virtual bool IsAdmin { get; set; }
     }
 }

@@ -1,24 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using MediatR;
 using SteamWeb.Models;
 using NHibernate;
 using NHibernate.Linq;
 using SteamWeb.ViewModels.Games;
 using SteamWeb.ViewModels.Users;
 using SteamWeb.ViewModels.Account;
+using SteamWeb.Infrastructure;
+using System.Net;
 
 namespace SteamWeb.Controllers
 {
     public class AccountController : Controller
     {
         private readonly NHibernate.ISession _session;
-
-        public AccountController(NHibernate.ISession session)
+        private readonly IMediator _mediator;
+        private readonly ICurrentUserContext _context;
+        public AccountController(IMediator mediator, ICurrentUserContext context, NHibernate.ISession session)
         {
+            _mediator = mediator;
+            _context = context;
             _session = session;
         }
 
@@ -30,7 +40,7 @@ namespace SteamWeb.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(Login login)
+        public async Task<IActionResult> Login(Login login)
         {
             if (!ModelState.IsValid)
             {
@@ -61,6 +71,17 @@ namespace SteamWeb.Controllers
                 ModelState.AddModelError(string.Empty, "Invalid Admin Status");
                 return View(login);
             }
+
+            /*
+             * 
+             * 
+             * 
+             * TODO: This
+             * 
+             * 
+             * 
+             */
+            await _mediator.Send(new Login.Command { UserId = maybeUser.Id });
 
             return View("~/Views/Games/Index.cshtml");
         }

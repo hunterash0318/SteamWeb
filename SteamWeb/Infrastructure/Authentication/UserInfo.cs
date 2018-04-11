@@ -12,7 +12,9 @@ namespace SteamWeb.Infrastructure.Authentication
         // by calling ClaimsPrincipal.Identity.Name (I think)
         public const string UserNameInfoType = ClaimTypes.Name;
         public const string UserIdInfoType = "usrId";
-        
+        public const string WorkingDateInfoType = "wrkDt";
+        public const string UserTypeInfoType = "usrTp";
+
         // Switch out for my equivalents
         /*
         public const string AgencyIdInfoType = "agyId";
@@ -27,6 +29,47 @@ namespace SteamWeb.Infrastructure.Authentication
         {
             InfoType = infoType;
             //Value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+    }
+
+    public class UserIdInfo : UserInfo
+    {
+        public UserIdInfo(int userId)
+            : base(UserIdInfoType)
+        {
+            Value = userId.ToString();
+        }
+    }
+    public class UserNameInfo : UserInfo
+    {
+        public UserNameInfo(string username)
+            : base(UserNameInfoType)
+        {
+            Value = username;
+        }
+    }
+    public class WorkingDateInfo : UserInfo
+    {
+        public WorkingDateInfo()
+            : base(WorkingDateInfoType)
+        {
+            Value = DateTime.Now.Date.ToString();
+        }
+        // This constructor will be used whenever we change the current working date - 
+        // we will have to reset the WorkingDate claim on the cookie.
+        public WorkingDateInfo(DateTime workingDate)
+            : base(WorkingDateInfoType)
+        {
+            Value = workingDate.Date.ToString();
+        }
+    }
+
+    public class UserTypeInfo : UserInfo
+    {
+        public UserTypeInfo(bool type)
+            : base(UserTypeInfoType)
+        {
+            Value = type.ToString();
         }
     }
 }

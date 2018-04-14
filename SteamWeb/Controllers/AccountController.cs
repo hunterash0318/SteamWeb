@@ -15,6 +15,7 @@ using NHibernate.Linq;
 using SteamWeb.ViewModels.Games;
 using SteamWeb.ViewModels.Users;
 using SteamWeb.ViewModels.Account;
+using SteamWeb.Infrastructure.Authentication;
 using SteamWeb.Infrastructure;
 using System.Net;
 
@@ -23,13 +24,13 @@ namespace SteamWeb.Controllers
     public class AccountController : Controller
     {
         private readonly NHibernate.ISession _session;
-        private readonly IMediator _mediator;
         private readonly ICurrentUserContext _context;
-        public AccountController(IMediator mediator, ICurrentUserContext context, NHibernate.ISession session)
+        private readonly IAuthenticationManager _authManager;
+        public AccountController(ICurrentUserContext context, NHibernate.ISession session, IAuthenticationManager authManager)
         {
-            _mediator = mediator;
             _context = context;
             _session = session;
+            _authManager = authManager;
         }
 
         [HttpGet]
@@ -72,18 +73,19 @@ namespace SteamWeb.Controllers
                 return View(login);
             }
 
-            /*
-             * 
-             * 
-             * 
-             * TODO: This
-             * 
-             * 
-             * 
-             */
-            await _mediator.Send(new Login.Command { UserId = maybeUser.Id });
+            var user = _session.Get<User>(maybeUser.Id);
 
-            return View("~/Views/Games/Index.cshtml");
+            var userInformations = new List<UserInfo>
+            {
+                new UserNameInfo(user.Username),
+                new UserIdInfo(user.Id),
+                new UserTypeInfo(user.IsAdmin),
+            };
+
+            await _authManager.SignInAsync(userInformations);
+            
+
+            return RedirectToAction("Index", "Games");
         }
     }
 }

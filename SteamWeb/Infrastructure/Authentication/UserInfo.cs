@@ -48,21 +48,6 @@ namespace SteamWeb.Infrastructure.Authentication
             Value = username;
         }
     }
-    public class WorkingDateInfo : UserInfo
-    {
-        public WorkingDateInfo()
-            : base(WorkingDateInfoType)
-        {
-            Value = DateTime.Now.Date.ToString();
-        }
-        // This constructor will be used whenever we change the current working date - 
-        // we will have to reset the WorkingDate claim on the cookie.
-        public WorkingDateInfo(DateTime workingDate)
-            : base(WorkingDateInfoType)
-        {
-            Value = workingDate.Date.ToString();
-        }
-    }
 
     public class UserTypeInfo : UserInfo
     {

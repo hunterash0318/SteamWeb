@@ -16,6 +16,10 @@ using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using SteamWeb.Infrastructure.Authentication;
+using SteamWeb.Infrastructure;
+using System.Security.Claims;
+
 namespace SteamWeb
 {
     public class Startup
@@ -55,7 +59,7 @@ namespace SteamWeb
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
-                    options.LoginPath = new PathString("Account/Login");
+                    options.LoginPath = new PathString("/Account/Login");
                 });
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -85,7 +89,11 @@ namespace SteamWeb
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-            
+
+            container.RegisterSingleton(typeof(IAuthenticationManager), new AspNetCookieAuthenticationAdapter(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>()));
+
+            container.RegisterSingleton(typeof(ICurrentUserContext), new AspNetCurrentUserContext(GetHttpContextProvider(app)));
+
             var SessionFactory = Fluently.Configure()
                 .Database(MsSqlConfiguration.MsSql2012.ConnectionString(Configuration["steamdb"]))
                 .Mappings(m => m.FluentMappings.AddFromAssemblyOf<Startup>())
@@ -106,7 +114,22 @@ namespace SteamWeb
             });
 
 
+
         }
+
+        private Func<ClaimsPrincipal> GetHttpContextProvider(IApplicationBuilder app)
+        {
+            var accessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
+            return () =>
+            {
+                if (accessor.HttpContext == null)
+                {
+                    throw new InvalidOperationException("No HttpContext");
+                }
+                return accessor.HttpContext.User;
+            };
+        }
+
     }
 
 

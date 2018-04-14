@@ -9,6 +9,8 @@ using NHibernate;
 using NHibernate.Linq;
 using SteamWeb.ViewModels.Games;
 using SteamWeb.ViewModels.Users;
+using SteamWeb.Infrastructure;
+using SteamWeb.Infrastructure.Authentication;
 
 
 namespace SteamWeb.Controllers
@@ -16,13 +18,13 @@ namespace SteamWeb.Controllers
     public class GamesController : Controller
     {
         private readonly NHibernate.ISession _session;
+        private readonly ICurrentUserContext _context;
 
-        public GamesController(NHibernate.ISession session)
+        public GamesController(NHibernate.ISession session, ICurrentUserContext context)
         {
             _session = session;
+            _context = context;
         }
-
-
 
         // GET: Game
         public ActionResult Index()
@@ -68,6 +70,28 @@ namespace SteamWeb.Controllers
             });
         }
 
+        public ActionResult MyGames()
+        {
+            User user = _session.Query<User>()
+                .Where(u => u.Id == _context.UserId)
+                .SingleOrDefault();
+            ViewData["header"] = user.Username + "'s Library";
+            IEnumerable<Game> gamesOwned = user.GamesOwned;
+            IEnumerable<GameItem> GameItems = gamesOwned.Select(game =>
+                new GameItem
+                {
+                    Title = game.Title,
+                    Price = game.Price,
+                    ReleaseDate = game.ReleaseDate,
+                    Id = game.Id
+                });
+
+            return View("Index", new Index
+            {
+                Games = GameItems
+            });
+        }
+
         public ActionResult Detail(int Id)
         {
             Game game = _session.Query<Game>()
@@ -87,9 +111,47 @@ namespace SteamWeb.Controllers
         }
 
         [HttpGet]
+        public ActionResult Buy()
+        {
+            return View("~/Views/Games/Buy.cshtml");
+        }
+
+        [HttpPost]
+        public ActionResult Buy(Game game)
+        {
+            User maybeUser = _session.Query<User>()
+                .Where(u => u.Id == _context.UserId)
+                .SingleOrDefault();
+
+            if (maybeUser == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            Game owned = maybeUser.GamesOwned.FirstOrDefault(g => g.Title == game.Title);
+            if (owned != null)
+            {
+                ViewData["error"] = "You already own this game";
+                return View();
+            }
+
+            if (maybeUser.Wallet < game.Price)
+            {
+                ViewData["error"] = "Insufficient funds to purchase game";
+                return View();
+            }
+
+            maybeUser.GamesOwned = maybeUser.GamesOwned.Concat(new Game[] { game });
+            _session.Save(maybeUser);
+            ViewData["error"] = "Game Successfully Purchased!";
+            return View();
+        }
+
+        [HttpGet]
         public ActionResult Add()
         {
             return View("~/Views/Games/Add.cshtml");
+
         }
 
         [HttpPost]

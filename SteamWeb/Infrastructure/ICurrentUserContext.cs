@@ -11,7 +11,6 @@ namespace SteamWeb.Infrastructure
     {
         string UserName { get; }
         int UserId { get; }
-        DateTime WorkingDate { get; }
         bool UserType { get; }
         bool IsAuthenticated { get; }
     }

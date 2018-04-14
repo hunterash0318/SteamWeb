@@ -23,43 +23,6 @@ namespace SteamWeb.ViewModels.Account
 
         public virtual bool Admin { get; set; }
 
-        public class Command : IRequest
-        {
-            public int UserId { get; set; }
-        }
-        public class CommandHandler : IRequestHandler<Command>
-        {
-            private readonly ISession _nhsession;
-            private readonly IAuthenticationManager _authManager;
-            public CommandHandler(ISession session, IAuthenticationManager authManager)
-            {
-                _nhsession = session;
-                _authManager = authManager;
-            }
 
-            public void Handle(Command message)
-            {
-                var user = _nhsession.Get<User>(message.UserId);
-
-                var userInformations = new List<UserInfo>
-                {
-                    new UserNameInfo(user.Username),
-                    new UserIdInfo(user.Id),
-                    new UserTypeInfo(user.IsAdmin),
-                    new WorkingDateInfo()
-                };
-                _authManager.SignInAsync(userInformations);
-
-                /* TODO: Look into detecting whether or not a user has enabled
-                 * cookies. If they are disabled, fall back to storing this 
-                 * "session" data in the database instead???
-                 */
-            }
-
-            public Task Handle(Command request, CancellationToken cancellationToken)
-            {
-                throw new NotImplementedException();
-            }
-        }
     }
 }

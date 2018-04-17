@@ -105,7 +105,7 @@ namespace SteamWeb
             container.Register(() => container.GetService<ISessionFactory>().OpenSession(), Lifestyle.Scoped);
 
             app.UseStaticFiles();
-
+            app.UseAuthentication();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

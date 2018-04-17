@@ -9,16 +9,50 @@ using NHibernate;
 using NHibernate.Linq;
 using SteamWeb.ViewModels.Games;
 using SteamWeb.ViewModels.Users;
+using SteamWeb.Infrastructure;
+using SteamWeb.Infrastructure.Authentication;
 
 namespace SteamWeb.Controllers
 {
     public class UsersController : Controller
     {
         private readonly NHibernate.ISession _session;
+        private readonly ICurrentUserContext _context;
 
-        public UsersController(NHibernate.ISession session)
+        public UsersController(NHibernate.ISession session, ICurrentUserContext context)
         {
             _session = session;
+            _context = context;
+        }
+
+        [HttpGet]
+        public ActionResult AddFunds()
+        {
+            User user = _session.Get<User>(_context.UserId);
+            AddFunds funds = new AddFunds
+            {
+                Id = user.Id,
+                Wallet = user.Wallet
+            };
+            return View(funds);
+        }
+
+        [HttpPost, ActionName("AddFunds")]
+        public ActionResult ConfirmAddFunds(AddFunds funds)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(funds);
+            }
+            User user = _session.Get<User>(_context.UserId);
+            using (var txn = _session.BeginTransaction())
+            {
+                user.Wallet = funds.Wallet;
+                _session.SaveOrUpdate(user);
+                txn.Commit();
+            }
+            ViewData["error"] = "Funds successfully added";
+            return View(funds);
         }
 
         [HttpGet]

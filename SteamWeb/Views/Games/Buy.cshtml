@@ -1,4 +1,4 @@
-﻿@model SteamWeb.Models.Game
+﻿@model SteamWeb.ViewModels.Games.Buy
 @{
     ViewData["Title"] = "Buy";
 }
@@ -49,8 +49,9 @@
     </dl>
 
     <form asp-action="Buy">
+        <div>@ViewData["error"]</div>
+        <input type="submit" value="Buy" class="btn btn-default" />
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Buy" class="btn btn-default" /> |
         <a asp-action="Index">Back to List</a>
     </form>
 </div>

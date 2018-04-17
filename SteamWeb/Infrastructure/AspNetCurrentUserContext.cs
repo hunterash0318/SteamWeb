@@ -24,6 +24,7 @@ namespace SteamWeb.Infrastructure
         {
             get
             {
+                var principle = _provider();
                 var value = _provider().Claims.SingleOrDefault(x => x.Type == UserInfo.UserNameInfoType)?.Value;
                 if (value == null)
                 {

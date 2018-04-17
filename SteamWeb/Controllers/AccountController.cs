@@ -82,7 +82,12 @@ namespace SteamWeb.Controllers
                 new UserTypeInfo(user.IsAdmin),
             };
 
-            await _authManager.SignInAsync(userInformations);
+            await _authManager.SignInAsync(userInformations, new Infrastructure.Authentication.CookieOptions()
+            {
+                AllowRefresh = true,
+                ExpirationDateTime = DateTime.Now.AddHours(1),
+                IsPersistent = false
+            });
             
 
             return RedirectToAction("Index", "Games");

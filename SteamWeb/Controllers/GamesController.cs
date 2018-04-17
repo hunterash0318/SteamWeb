@@ -73,7 +73,7 @@ namespace SteamWeb.Controllers
         public ActionResult MyGames()
         {
             User user = _session.Query<User>()
-                .Where(u => u.Id == _context.UserId)
+                .Where(u => u.Username == _context.UserName)
                 .SingleOrDefault();
             ViewData["header"] = user.Username + "'s Library";
             IEnumerable<Game> gamesOwned = user.GamesOwned;
@@ -111,40 +111,71 @@ namespace SteamWeb.Controllers
         }
 
         [HttpGet]
-        public ActionResult Buy()
+        public ActionResult Buy(int Id)
         {
-            return View("~/Views/Games/Buy.cshtml");
+            Game game = _session.Get<Game>(Id);
+            Buy buy = new Buy
+            {
+                Id = game.Id,
+                Title = game.Title,
+                Developer = game.Developer,
+                Description = game.Description,
+                Genre = game.Genre,
+                Price = game.Price,
+                ReleaseDate = game.ReleaseDate,
+
+            };
+            return View(buy);
         }
 
         [HttpPost]
-        public ActionResult Buy(Game game)
+        public ActionResult Buy(Buy buy)
         {
-            User maybeUser = _session.Query<User>()
-                .Where(u => u.Id == _context.UserId)
-                .SingleOrDefault();
+            User maybeUser = _session.Get<User>(_context.UserId);
 
             if (maybeUser == null)
             {
                 return RedirectToAction("Index");
             }
 
+            Game game = _session.Get<Game>(buy.Id);
+            Buy buy2 = new Buy
+            {
+                Id = game.Id,
+                Title = game.Title,
+                Developer = game.Developer,
+                Description = game.Description,
+                Genre = game.Genre,
+                Price = game.Price,
+                ReleaseDate = game.ReleaseDate,
+
+            };
             Game owned = maybeUser.GamesOwned.FirstOrDefault(g => g.Title == game.Title);
             if (owned != null)
             {
                 ViewData["error"] = "You already own this game";
-                return View();
+                return View(buy2);
             }
 
             if (maybeUser.Wallet < game.Price)
             {
                 ViewData["error"] = "Insufficient funds to purchase game";
-                return View();
+                return View(buy2);
             }
 
-            maybeUser.GamesOwned = maybeUser.GamesOwned.Concat(new Game[] { game });
-            _session.Save(maybeUser);
+            List<Game> gameList = new List<Game> { game };
+
+            using (var txn = _session.BeginTransaction())
+            {
+                maybeUser.GamesOwned = maybeUser.GamesOwned.Concat(gameList);
+                maybeUser.Wallet = maybeUser.Wallet - game.Price;
+                _session.SaveOrUpdate(maybeUser);
+                txn.Commit();
+            }
+
+            
             ViewData["error"] = "Game Successfully Purchased!";
-            return View();
+            return View(buy2);
         }
 
         [HttpGet]

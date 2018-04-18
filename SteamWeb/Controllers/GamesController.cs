@@ -46,7 +46,8 @@ namespace SteamWeb.Controllers
 
             return View(new Index
             {
-                Games = GameItems
+                Games = GameItems,
+                UserIsAdmin = _context.UserType
             });
         }
 
@@ -181,6 +182,11 @@ namespace SteamWeb.Controllers
         [HttpGet]
         public ActionResult Add()
         {
+            if (!_context.UserType)
+            {
+                ViewData["error"] = "Error: you do not have that permission";
+                return RedirectToAction("Index");
+            }
             return View("~/Views/Games/Add.cshtml");
 
         }
@@ -217,6 +223,11 @@ namespace SteamWeb.Controllers
         [HttpGet]
         public ActionResult Delete(int Id)
         {
+            if (!_context.UserType)
+            {
+                ViewData["error"] = "Error: you do not have that permission";
+                return RedirectToAction("Index");
+            }
             Game game = _session.Query<Game>()
                 .Where(g => g.Id == Id)
                 .SingleOrDefault();
@@ -238,6 +249,11 @@ namespace SteamWeb.Controllers
         [HttpGet]
         public ActionResult Edit(int Id)
         {
+            if (!_context.UserType)
+            {
+                ViewData["error"] = "Error: you do not have that permission";
+                return RedirectToAction("Index");
+            }
             Game game = _session.Get<Game>(Id);
             Edit edit = new Edit
             {

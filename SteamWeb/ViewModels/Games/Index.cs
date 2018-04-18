@@ -9,6 +9,7 @@ namespace SteamWeb.ViewModels.Games
     public class Index
     {
         public IEnumerable<GameItem> Games { get; set; }
+        public bool UserIsAdmin { get; set; }
        
     }
     public class GameItem

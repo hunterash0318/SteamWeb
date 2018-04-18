@@ -44,6 +44,11 @@ namespace SteamWeb.Controllers
             {
                 return View(funds);
             }
+            if (funds.Wallet >= (decimal)1000.0)
+            {
+                ViewData["error"] = "Error: Wallet amount cannot exceed $999.99";
+                return View(funds);
+            }
             User user = _session.Get<User>(_context.UserId);
             using (var txn = _session.BeginTransaction())
             {
@@ -58,11 +63,16 @@ namespace SteamWeb.Controllers
         [HttpGet]
         public ActionResult AddUser()
         {
+            if (!_context.UserType)
+            {
+                ViewData["error"] = "Error: you do not have that permission";
+                return RedirectToAction("Index", "Games");
+            }
             return View("~/Views/Users/AddUser.cshtml");
         }
 
-        [HttpPost]
-        public ActionResult AddUser(AddUser add)
+        [HttpPost, ActionName("AddUser")]
+        public ActionResult ConfirmAddUser(AddUser add)
         {
             if (!ModelState.IsValid)
             {
@@ -71,6 +81,11 @@ namespace SteamWeb.Controllers
             User maybeUser = _session.Query<User>()
                 .Where(u => u.Username == add.Username)
                 .SingleOrDefault();
+            if (add.Wallet >= (decimal)1000.0)
+            {
+                ViewData["error"] = "Error: Wallet amount cannot exceed $999.99";
+                return View(add);
+            }
             if (maybeUser == null)
             {
                 User user = new User
@@ -86,7 +101,7 @@ namespace SteamWeb.Controllers
                 };
                 _session.Save(user);
                 ViewData["error"] = "User successfully added!";
-                return View();
+                return View(add);
             }
             ModelState.AddModelError("User", "Error: A user with that name already exists.");
             return View();
@@ -107,7 +122,9 @@ namespace SteamWeb.Controllers
 
             return View(new IndexUser
             {
-                Users = UserItems
+                Users = UserItems,
+                UserIsAdmin = _context.UserType,
+                UserId = _context.UserId
             });
         }
 
@@ -133,6 +150,11 @@ namespace SteamWeb.Controllers
         [HttpGet]
         public ActionResult DeleteUser(int Id)
         {
+            if (!_context.UserType)
+            {
+                ViewData["error"] = "Error: you do not have that permission";
+                return RedirectToAction("Index", "Games");
+            }
             User user = _session.Query<User>()
                 .Where(u => u.Id == Id)
                 .SingleOrDefault();
@@ -146,6 +168,72 @@ namespace SteamWeb.Controllers
             {
                 User user = _session.Get<User>(Id);
                 _session.Delete(user);
+                txn.Commit();
+            }
+            return RedirectToAction("IndexUser");
+        }
+
+        [HttpGet]
+        public ActionResult EditUser(int Id)
+        {
+            if (!_context.UserType && !(_context.UserId == Id))
+            {
+                ViewData["error"] = "Error: you do not have that permission";
+                return View("~/Views/Games/Index.cshtml");
+            }
+            User user = _session.Get<User>(Id);
+            EditUser edit = new EditUser
+            {
+                Id = user.Id,
+                Username = user.Username,
+                Bio = user.Bio,
+                Wallet = user.Wallet,
+                Location = user.Location,
+                Password = user.Password,
+                IsAdmin = user.IsAdmin,
+                UserIsAdmin = _context.UserType,
+                Friends = user.Friends
+            };
+            return View(edit);
+        }
+
+        [HttpPost, ActionName("EditUser")]
+        public ActionResult ConfirmEditUser(EditUser editedUser)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(editedUser);
+            }
+
+            // [Ryan]: Here, we need to make sure that there is not already another game with the same title but different ID.
+            // If we just checked for games with the same title, we would find the one that we are currently editing!!
+            User maybeUser = _session.Query<User>()
+                .Where(u => u.Username == editedUser.Username && u.Id != editedUser.Id)
+                .SingleOrDefault();
+            if (maybeUser != null)
+            {
+                //TODO: Use ModelState.AddModelError here to add a model error to the Title field!
+                // This will make the error show up right next to the field that has the error, making it clearer to users of your system which part of their form they need to fix.
+                // ModelState.AddModelError(nameof(editedUser.Title), "A game with that title already exists.");
+                ViewData["error"] = "Error: A user with that name already exists";
+                return View();
+            }
+            if (editedUser.Wallet >= (decimal) 1000.0)
+            {
+                ViewData["error"] = "Error: Wallet amount cannot exceed $999.99";
+                return View(editedUser);
+            }
+            User user = _session.Get<User>(editedUser.Id);
+            using (var txn = _session.BeginTransaction())
+            {
+                user.Username = editedUser.Username;
+                user.Bio = editedUser.Bio;
+                user.Wallet = editedUser.Wallet;
+                user.Location = editedUser.Location;
+                user.Password = editedUser.Password;
+                user.IsAdmin = editedUser.IsAdmin;
+                user.Friends = editedUser.Friends;
+                _session.SaveOrUpdate(user);
                 txn.Commit();
             }
             return RedirectToAction("IndexUser");

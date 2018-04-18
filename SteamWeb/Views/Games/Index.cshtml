@@ -36,13 +36,19 @@
                 @item.ReleaseDate.ToShortDateString()
             </td>
             <td>
-                <a asp-controller="Games" asp-action="Delete" asp-route-id="@item.Id"> Delete </a>
+                @if (Model.UserIsAdmin)
+                {
+                    <a asp-controller="Games" asp-action="Delete" asp-route-id="@item.Id"> Delete </a>
+                }
             </td>
             <td>
                 <a asp-controller="Games" asp-action="Detail" asp-route-id="@item.Id"> Details </a>
             </td>
             <td>
-                <a asp-controller="Games" asp-action="Edit" asp-route-id="@item.Id"> Edit </a>
+                @if (Model.UserIsAdmin)
+                { 
+                    <a asp-controller="Games" asp-action="Edit" asp-route-id="@item.Id"> Edit </a>
+                }
             </td>
             <td>
                 <a asp-controller="Games" asp-action="Buy" asp-route-id="@item.Id"> Buy </a>
@@ -52,3 +58,4 @@
         }
     </tbody>
 </table>
+<div>@ViewData["error"]</div>

@@ -9,7 +9,8 @@ namespace SteamWeb.ViewModels.Users
     public class IndexUser
     {
         public IEnumerable<UserItem> Users { get; set; }
-
+        public bool UserIsAdmin { get; set; }
+        public int UserId { get; set; }
     }
     public class UserItem
     {

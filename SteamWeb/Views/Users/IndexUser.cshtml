@@ -35,16 +35,20 @@
                     $@item.Wallet
                 </td>
                 <td>
-                    <a asp-controller="Users" asp-action="DeleteUser" asp-route-id="@item.Id"> Delete </a>
+                    @if (Model.UserIsAdmin || Model.UserId == item.Id)
+                    {
+                        <a asp-controller="Users" asp-action="DeleteUser" asp-route-id="@item.Id"> Delete </a>
+                    }
                 </td>
                 <td>
                     <a asp-controller="Users" asp-action="UserDetail" asp-route-id="@item.Id"> Details </a>
                 </td>
-                @*
                 <td>
-                    <a asp-controller="Users" asp-action="Edit" asp-route-id="@item.Id"> Edit </a>
+                    @if (Model.UserIsAdmin || Model.UserId == item.Id)
+                    {
+                        <a asp-controller="Users" asp-action="EditUser" asp-route-id="@item.Id"> Edit </a>
+                    }
                 </td>
-                *@
             </tr>
 
         }

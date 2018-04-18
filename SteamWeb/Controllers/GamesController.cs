@@ -268,6 +268,8 @@ namespace SteamWeb.Controllers
             if(maybeGame != null)
             {
                 //TODO: Use ModelState.AddModelError here to add a model error to the Title field!
+                // This will make the error show up right next to the field that has the error, making it clearer to users of your system which part of their form they need to fix.
+                // ModelState.AddModelError(nameof(editedGame.Title), "A game with that title already exists.");
                 ViewData["error"] = "Error: A game with that title already exists";
                 return View();
             }

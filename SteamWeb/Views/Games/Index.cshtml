@@ -51,7 +51,14 @@
                 }
             </td>
             <td>
-                <a asp-controller="Games" asp-action="Buy" asp-route-id="@item.Id"> Buy </a>
+                @if (!Model.MyLibrary && !item.IsOwned)
+                {
+                    <a asp-controller="Games" asp-action="Buy" asp-route-id="@item.Id"> Buy </a>
+                }
+                else if(!Model.MyLibrary && item.IsOwned)
+                {
+                    @:Purchased!
+                }
             </td>
         </tr>
 

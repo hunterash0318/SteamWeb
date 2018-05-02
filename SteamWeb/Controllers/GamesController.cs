@@ -11,6 +11,8 @@ using SteamWeb.ViewModels.Games;
 using SteamWeb.ViewModels.Users;
 using SteamWeb.Infrastructure;
 using SteamWeb.Infrastructure.Authentication;
+using AutoMapper.QueryableExtensions;
+using AutoMapper;
 
 
 namespace SteamWeb.Controllers
@@ -29,7 +31,8 @@ namespace SteamWeb.Controllers
         // GET: Game
         public ActionResult Index()
         {
-            
+            User user = _session.Get<User>(_context.UserId);
+
             ViewData["Title"] = "Index";
             ViewData["header"] = "Index";
             
@@ -41,19 +44,23 @@ namespace SteamWeb.Controllers
                     Title = game.Title,
                     Price = game.Price,
                     ReleaseDate = game.ReleaseDate,
-                    Id = game.Id
+                    Id = game.Id,
+                    IsOwned = user.GamesOwned.Contains<Game>(game)
                 });
 
             return View(new Index
             {
                 Games = GameItems,
-                UserIsAdmin = _context.UserType
+                UserIsAdmin = _context.UserType,
+                MyLibrary = false
             });
         }
 
         public ActionResult UserGames(int Id)
         {
             User user = _session.Get<User>(Id);
+            User currentUser = _session.Get<User>(_context.UserId);
+
             ViewData["header"] = user.Username + "'s Library";
             IEnumerable<Game> gamesOwned = user.GamesOwned;
             IEnumerable<GameItem> GameItems = gamesOwned.Select(game =>
@@ -62,7 +69,8 @@ namespace SteamWeb.Controllers
                     Title = game.Title,
                     Price = game.Price,
                     ReleaseDate = game.ReleaseDate,
-                    Id = game.Id
+                    Id = game.Id,
+                    IsOwned = currentUser.GamesOwned.Contains<Game>(game)
                 });
 
             return View("Index", new Index
@@ -77,37 +85,20 @@ namespace SteamWeb.Controllers
                 .Where(u => u.Username == _context.UserName)
                 .SingleOrDefault();
             ViewData["header"] = user.Username + "'s Library";
-            IEnumerable<Game> gamesOwned = user.GamesOwned;
-            IEnumerable<GameItem> GameItems = gamesOwned.Select(game =>
-                new GameItem
-                {
-                    Title = game.Title,
-                    Price = game.Price,
-                    ReleaseDate = game.ReleaseDate,
-                    Id = game.Id
-                });
-
+            IEnumerable<GameItem> gameItems = user.GamesOwned.Select(game => Mapper.Map<GameItem>(game));
+            
             return View("Index", new Index
             {
-                Games = GameItems
+                Games = gameItems,
+                MyLibrary = true
             });
         }
 
         public ActionResult Detail(int Id)
         {
-            Game game = _session.Query<Game>()
-                .Where(g => g.Id == Id)
-                .SingleOrDefault();
-            GameDetail detail = new GameDetail
-            {
-                Title = game.Title,
-                Developer = game.Developer,
-                Description = game.Description,
-                Genre = game.Genre,
-                Price = game.Price,
-                ReleaseDate = game.ReleaseDate,
-
-            };
+            Game game = _session.Get<Game>(Id);
+            GameDetail detail = Mapper.Map<GameDetail>(game);
+            
             return View(detail);
         }
 
@@ -115,17 +106,7 @@ namespace SteamWeb.Controllers
         public ActionResult Buy(int Id)
         {
             Game game = _session.Get<Game>(Id);
-            Buy buy = new Buy
-            {
-                Id = game.Id,
-                Title = game.Title,
-                Developer = game.Developer,
-                Description = game.Description,
-                Genre = game.Genre,
-                Price = game.Price,
-                ReleaseDate = game.ReleaseDate,
-
-            };
+            Buy buy = Mapper.Map<Buy>(game);
             return View(buy);
         }
 
@@ -140,17 +121,7 @@ namespace SteamWeb.Controllers
             }
 
             Game game = _session.Get<Game>(buy.Id);
-            Buy buy2 = new Buy
-            {
-                Id = game.Id,
-                Title = game.Title,
-                Developer = game.Developer,
-                Description = game.Description,
-                Genre = game.Genre,
-                Price = game.Price,
-                ReleaseDate = game.ReleaseDate,
-
-            };
+            Buy buy2 = Mapper.Map<Buy>(game);
             Game owned = maybeUser.GamesOwned.FirstOrDefault(g => g.Title == game.Title);
             if (owned != null)
             {
@@ -203,15 +174,7 @@ namespace SteamWeb.Controllers
                 .SingleOrDefault();
             if(maybeGame == null)
             {
-                Game game = new Game
-                {
-                    Title = add.Title,
-                    Developer = add.Developer,
-                    Description = add.Description,
-                    Genre = add.Genre,
-                    Price = add.Price,
-                    ReleaseDate = add.ReleaseDate
-                };
+                Game game = Mapper.Map<Game>(add);
                 _session.Save(game);
                 ViewData["error"] = "Game successfully added!";
                 return View();
@@ -255,16 +218,7 @@ namespace SteamWeb.Controllers
                 return RedirectToAction("Index");
             }
             Game game = _session.Get<Game>(Id);
-            Edit edit = new Edit
-            {
-                Id = game.Id,
-                Title = game.Title,
-                Developer = game.Developer,
-                Description = game.Description,
-                Genre = game.Genre,
-                Price = game.Price,
-                ReleaseDate = game.ReleaseDate,
-            };
+            Edit edit = Mapper.Map<Edit>(game);
             return View(edit);
         }
 
@@ -289,15 +243,9 @@ namespace SteamWeb.Controllers
                 ViewData["error"] = "Error: A game with that title already exists";
                 return View();
             }
-            Game game = _session.Get<Game>(editedGame.Id);
+            Game game = Mapper.Map<Game>(editedGame);
             using (var txn = _session.BeginTransaction())
             {
-                game.Title = editedGame.Title;
-                game.Developer = editedGame.Developer;
-                game.Description = editedGame.Description;
-                game.Genre = editedGame.Genre;
-                game.Price = editedGame.Price;
-                game.ReleaseDate = editedGame.ReleaseDate;
                 _session.SaveOrUpdate(game);
                 txn.Commit();
             }

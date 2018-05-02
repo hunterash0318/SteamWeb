@@ -19,10 +19,7 @@ namespace SteamWeb.ViewModels.Account
         public virtual string Username { get; set; }
 
         [Required]
+        [DataType(DataType.Password)]
         public virtual string Password { get; set; }
-
-        public virtual bool Admin { get; set; }
-
-
     }
 }

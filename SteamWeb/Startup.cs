@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Http;
 using SteamWeb.Infrastructure.Authentication;
 using SteamWeb.Infrastructure;
 using System.Security.Claims;
+using AutoMapper;
 
 namespace SteamWeb
 {
@@ -29,7 +30,6 @@ namespace SteamWeb
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-
         }
 
         public IConfiguration Configuration { get; }
@@ -103,6 +103,8 @@ namespace SteamWeb
 
             // Register how to create an ISession using an ISessionFactory.
             container.Register(() => container.GetService<ISessionFactory>().OpenSession(), Lifestyle.Scoped);
+
+            Mapper.Initialize(cfg => cfg.AddProfiles(typeof(Startup).Assembly));
 
             app.UseStaticFiles();
             app.UseAuthentication();

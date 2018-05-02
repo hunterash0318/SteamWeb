@@ -11,6 +11,7 @@ using SteamWeb.ViewModels.Games;
 using SteamWeb.ViewModels.Users;
 using SteamWeb.Infrastructure;
 using SteamWeb.Infrastructure.Authentication;
+using AutoMapper;
 
 namespace SteamWeb.Controllers
 {
@@ -29,11 +30,7 @@ namespace SteamWeb.Controllers
         public ActionResult AddFunds()
         {
             User user = _session.Get<User>(_context.UserId);
-            AddFunds funds = new AddFunds
-            {
-                Id = user.Id,
-                Wallet = user.Wallet
-            };
+            AddFunds funds = Mapper.Map<AddFunds>(user);
             return View(funds);
         }
 
@@ -88,17 +85,10 @@ namespace SteamWeb.Controllers
             }
             if (maybeUser == null)
             {
-                User user = new User
-                {
-                    Username = add.Username,
-                    Bio = add.Bio,
-                    Wallet = add.Wallet,
-                    Location = add.Location,
-                    Password = add.Password,
-                    IsAdmin = add.IsAdmin,
-                    GamesOwned = Enumerable.Empty<Game>(),
-                    Friends = Enumerable.Empty<User>()
-                };
+                User user = Mapper.Map<User>(add);
+                user.GamesOwned = Enumerable.Empty<Game>();
+                user.Friends = Enumerable.Empty<User>();
+
                 _session.Save(user);
                 ViewData["error"] = "User successfully added!";
                 return View(add);
@@ -133,17 +123,9 @@ namespace SteamWeb.Controllers
             User user = _session.Query<User>()
                 .Where(u => u.Id == Id)
                 .SingleOrDefault();
-            UserDetail detail = new UserDetail
-            {
-                Id = user.Id,
-                Username = user.Username,
-                Wallet = user.Wallet,
-                Bio = user.Bio,
-                Location = user.Location,
-                Password = user.Password,
-                IsAdmin = user.IsAdmin
-
-            };
+            UserDetail detail = Mapper.Map<UserDetail>(user);
+            detail.UserIsAdmin = _context.UserType;
+            detail.CurrentUserId = _context.UserId;
             return View(detail);
         }
 
@@ -182,18 +164,8 @@ namespace SteamWeb.Controllers
                 return View("~/Views/Games/Index.cshtml");
             }
             User user = _session.Get<User>(Id);
-            EditUser edit = new EditUser
-            {
-                Id = user.Id,
-                Username = user.Username,
-                Bio = user.Bio,
-                Wallet = user.Wallet,
-                Location = user.Location,
-                Password = user.Password,
-                IsAdmin = user.IsAdmin,
-                UserIsAdmin = _context.UserType,
-                Friends = user.Friends
-            };
+            EditUser edit = Mapper.Map<EditUser>(user);
+            edit.UserIsAdmin = _context.UserType;
             return View(edit);
         }
 
@@ -223,16 +195,9 @@ namespace SteamWeb.Controllers
                 ViewData["error"] = "Error: Wallet amount cannot exceed $999.99";
                 return View(editedUser);
             }
-            User user = _session.Get<User>(editedUser.Id);
+            User user = Mapper.Map<User>(editedUser);
             using (var txn = _session.BeginTransaction())
             {
-                user.Username = editedUser.Username;
-                user.Bio = editedUser.Bio;
-                user.Wallet = editedUser.Wallet;
-                user.Location = editedUser.Location;
-                user.Password = editedUser.Password;
-                user.IsAdmin = editedUser.IsAdmin;
-                user.Friends = editedUser.Friends;
                 _session.SaveOrUpdate(user);
                 txn.Commit();
             }

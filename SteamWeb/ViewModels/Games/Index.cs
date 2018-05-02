@@ -10,13 +10,14 @@ namespace SteamWeb.ViewModels.Games
     {
         public IEnumerable<GameItem> Games { get; set; }
         public bool UserIsAdmin { get; set; }
-       
+        public bool MyLibrary { get; set; }
     }
     public class GameItem
     {
         public string Title { get; set; }
         public decimal Price { get; set; }
         public DateTime ReleaseDate { get; set; }
+        public bool IsOwned { get; set; }
 
         public int Id { get; set; }
     }

@@ -67,12 +67,6 @@ namespace SteamWeb.Controllers
                 return View(login);
             }
 
-            if (maybeUser.IsAdmin != login.Admin)
-            {
-                ModelState.AddModelError(string.Empty, "Invalid Admin Status");
-                return View(login);
-            }
-
             var user = _session.Get<User>(maybeUser.Id);
 
             var userInformations = new List<UserInfo>

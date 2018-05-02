@@ -22,7 +22,6 @@
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
-            @Html.CheckBoxFor(m => m.Admin) Admin
             <div class="form-group">
                 <div>@ViewData["error"]</div>
                 <input type="submit" value="Submit" class="btn btn-default" />

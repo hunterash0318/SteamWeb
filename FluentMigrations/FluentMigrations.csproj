@@ -50,6 +50,7 @@
     <Compile Include="M20180314_1220_AddAdmins.cs" />
     <Compile Include="M20180303_1747_AddUsers.cs" />
     <Compile Include="M20180409_1740_MergeAdminUser.cs" />
+    <Compile Include="M20180507_1206_AddGifts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

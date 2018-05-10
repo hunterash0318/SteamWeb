@@ -24,5 +24,7 @@ namespace SteamWeb.Models
         public virtual IEnumerable<Game> GamesOwned { get; set; }
 
         public virtual IEnumerable<User> Friends { get; set; }
+
+        public virtual IEnumerable<Gift> GiftsOwned { get; set; }
     }
 }

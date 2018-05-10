@@ -1,0 +1,36 @@
+﻿@model SteamWeb.ViewModels.Games.SendGift
+
+@{
+    ViewData["Title"] = "Confirm Gift";
+}
+
+<h2>Confirm Gift</h2>
+
+<h3>Are you sure you want to send this gift?</h3>
+<div>
+    <h4>User</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ReceiverName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ReceiverName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd>
+            $@Html.DisplayFor(model => model.Price)
+        </dd>
+    </dl>
+
+    <div>@ViewData["error"]</div>
+    <a asp-controller="Games" asp-action="ConfirmGift" asp-route-id="@Model.ReceiverId" asp-route-gameid="@Model.GameId"> Send Gift </a>
+</div>

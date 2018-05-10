@@ -28,6 +28,10 @@ namespace SteamWeb.Maps
                 .Table("UserRelationships")
                 .ParentKeyColumn("UserId1")
                 .ChildKeyColumn("UserId2");
+            HasManyToMany(u => u.GiftsOwned)
+                .Table("GiftOwnerships")
+                .ParentKeyColumn("UserId")
+                .ChildKeyColumn("GiftId");
         }
     }
 }

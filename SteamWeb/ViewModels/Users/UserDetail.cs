@@ -23,6 +23,10 @@ namespace SteamWeb.ViewModels.Users
 
         public virtual bool IsAdmin { get; set; }
 
+        public virtual bool UserIsAdmin { get; set; }
+
+        public virtual int CurrentUserId { get; set; }
+
         public virtual IEnumerable<Game> GamesOwned { get; set; }
 
         public virtual IEnumerable<User> Friends { get; set; }

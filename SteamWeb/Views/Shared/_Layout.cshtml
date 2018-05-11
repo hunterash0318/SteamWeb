@@ -35,7 +35,9 @@
                     <li><a asp-area="" asp-controller="Users" asp-action="IndexUser">User Index</a></li>
                     <li><a asp-area="" asp-controller="Users" asp-action="AddUser">Add User</a></li>
                     <li><a asp-area="" asp-controller="Games" asp-action="MyGames">My Games</a></li>
+                    <li><a asp-area="" asp-controller="Games" asp-action="MyGifts">My Gifts</a></li>
                     <li><a asp-area="" asp-controller="Users" asp-action="AddFunds">Add Funds</a></li>
+                    <li><a asp-area="" asp-controller="Games" asp-action="SendGift">Send Gift</a></li>
 
                     @*<li><a asp-area="" asp-controller="Games" asp-action="Delete">Delete Game</a></li>*@
                 </ul>
@@ -52,6 +54,7 @@
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
     </environment>

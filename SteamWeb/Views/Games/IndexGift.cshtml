@@ -1,0 +1,59 @@
+﻿@model SteamWeb.ViewModels.Games.IndexGift
+@using SteamWeb.ViewModels.Games
+
+
+
+<h2>@ViewData["header"]</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Title
+            </th>
+            <th>
+                Sender
+            </th>
+            <th>
+                Message
+            </th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (GiftItem item in Model.Gifts)
+        {
+            <tr>
+                <td>
+                    @item.GameTitle
+                </td>
+                <td>
+                    @item.SenderName
+                </td>
+                <td>
+                    @item.Message
+                </td>
+                <td>
+                    @if (!item.Returned)
+                    {
+                        <a asp-controller="Games" asp-action="AcceptGift" asp-route-id="@item.Id"> Accept Gift </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Games" asp-action="RefundGift" asp-route-id="@item.Id"> Refund Gift </a>
+                    }
+                </td>
+                <td>
+                    @if (!item.Returned)
+                    {
+                        <a asp-controller="Games" asp-action="ReturnGift" asp-route-id="@item.Id"> Return Gift </a>
+                    }
+                </td>
+            </tr>
+
+        }
+    </tbody>
+</table>
+<div>@ViewData["error"]</div>

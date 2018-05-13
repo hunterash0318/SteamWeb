@@ -93,7 +93,7 @@ namespace SteamWeb.Controllers
                 ViewData["error"] = "User successfully added!";
                 return View(add);
             }
-            ModelState.AddModelError("User", "Error: A user with that name already exists.");
+            ModelState.AddModelError("Username", "Error: A user with that name already exists.");
             return View();
         }
 

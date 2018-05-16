@@ -33,6 +33,7 @@ namespace SteamWeb.Controllers
             _authManager = authManager;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Login()
         {
@@ -40,6 +41,7 @@ namespace SteamWeb.Controllers
             return View("~/Views/Account/Login.cshtml");
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Login(Login login)
         {
@@ -85,6 +87,12 @@ namespace SteamWeb.Controllers
             
 
             return RedirectToAction("Index", "Games");
+        }
+
+        public ActionResult Logout()
+        {
+            _authManager.SignOutAsync();
+            return RedirectToAction("Login");
         }
     }
 }

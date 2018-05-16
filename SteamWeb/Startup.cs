@@ -14,6 +14,8 @@ using SimpleInjector.Lifestyles;
 using SimpleInjector.Integration.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using SteamWeb.Infrastructure.Authentication;
@@ -61,6 +63,14 @@ namespace SteamWeb
                 {
                     options.LoginPath = new PathString("/Account/Login");
                 });
+
+            services.AddMvc(config =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+                config.Filters.Add(new AuthorizeFilter(policy));
+            });
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

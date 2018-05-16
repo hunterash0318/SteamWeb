@@ -223,13 +223,13 @@ namespace SteamWeb.Controllers
             Game owned = maybeUser.GamesOwned.FirstOrDefault(g => g.Title == game.Title);
             if (owned != null)
             {
-                ViewData["error"] = "You already own this game";
+                ModelState.AddModelError(string.Empty, "You already own this game");
                 return View(buy2);
             }
 
             if (maybeUser.Wallet < game.Price)
             {
-                ViewData["error"] = "Insufficient funds to purchase game";
+                ModelState.AddModelError(string.Empty, "Insufficient funds to purchase game");
                 return View(buy2);
             }
 
@@ -243,8 +243,7 @@ namespace SteamWeb.Controllers
                 txn.Commit();
             }
 
-            
-            ViewData["error"] = "Game Successfully Purchased!";
+            ModelState.AddModelError(string.Empty, "Game successfully purchased!");
             return View(buy2);
         }
 
@@ -286,7 +285,7 @@ namespace SteamWeb.Controllers
 
             if (sender.Wallet < gameExists.Price)
             {
-                ViewData["error"] = "Insufficient funds to purchase game.";
+                ModelState.AddModelError(string.Empty, "Insufficient funds to purchase game");
                 return View();
             }
 
@@ -297,9 +296,9 @@ namespace SteamWeb.Controllers
 
             Gift giftExists = userExists.GiftsOwned.FirstOrDefault(g => g.GameId == gameExists.Id);
 
-            if (userExists.GamesOwned.Contains<Game>(gameExists) || giftExists != null)
+            if (userExists.GamesOwned.Contains<Game>(gameExists) || (giftExists != null && !giftExists.Returned))
             {
-                ViewData["error"] = "That user already owns or has been gifted this game.";
+                ModelState.AddModelError(string.Empty, "The user already owns or has been gifted this game");
                 return View();
             }
             
@@ -329,7 +328,7 @@ namespace SteamWeb.Controllers
                 txn.Commit();
             }
 
-            ViewData["error"] = "Gift successfully sent";
+            ModelState.AddModelError(string.Empty, "Gift successfully sent!");
             return View(sendGift);
         }
 
@@ -361,7 +360,7 @@ namespace SteamWeb.Controllers
             {
                 Game game = Mapper.Map<Game>(add);
                 _session.Save(game);
-                ViewData["error"] = "Game successfully added!";
+                ModelState.AddModelError(string.Empty, "Game successfully added!");
                 return View();
             }
             ModelState.AddModelError("Title", "Error: A game with that title already exists.");
@@ -425,7 +424,7 @@ namespace SteamWeb.Controllers
                 //TODO: Use ModelState.AddModelError here to add a model error to the Title field!
                 // This will make the error show up right next to the field that has the error, making it clearer to users of your system which part of their form they need to fix.
                 // ModelState.AddModelError(nameof(editedGame.Title), "A game with that title already exists.");
-                ViewData["error"] = "Error: A game with that title already exists";
+                ModelState.AddModelError(string.Empty, "Error: A game with that title already exists");
                 return View();
             }
             Game game = Mapper.Map<Game>(editedGame);

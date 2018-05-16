@@ -49,6 +49,7 @@
     </dl>
 
     <form asp-action="Buy">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div>@ViewData["error"]</div>
         <input type="submit" value="Buy" class="btn btn-default" />
         <input type="hidden" asp-for="Id" />

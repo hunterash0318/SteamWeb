@@ -43,7 +43,7 @@ namespace SteamWeb.Controllers
             }
             if (funds.Wallet >= (decimal)1000.0)
             {
-                ViewData["error"] = "Error: Wallet amount cannot exceed $999.99";
+                ModelState.AddModelError(string.Empty, "Error: Wallet amount cannot exceed $999.99");
                 return View(funds);
             }
             User user = _session.Get<User>(_context.UserId);
@@ -53,7 +53,7 @@ namespace SteamWeb.Controllers
                 _session.SaveOrUpdate(user);
                 txn.Commit();
             }
-            ViewData["error"] = "Funds successfully added";
+            ModelState.AddModelError(string.Empty, "Funds successfully added!");
             return View(funds);
         }
 
@@ -80,7 +80,7 @@ namespace SteamWeb.Controllers
                 .SingleOrDefault();
             if (add.Wallet >= (decimal)1000.0)
             {
-                ViewData["error"] = "Error: Wallet amount cannot exceed $999.99";
+                ModelState.AddModelError(string.Empty, "Error: Wallet amount cannot exceed $999.99");
                 return View(add);
             }
             if (maybeUser == null)
@@ -90,7 +90,7 @@ namespace SteamWeb.Controllers
                 user.Friends = Enumerable.Empty<User>();
 
                 _session.Save(user);
-                ViewData["error"] = "User successfully added!";
+                ModelState.AddModelError(string.Empty, "User successfully added!");
                 return View(add);
             }
             ModelState.AddModelError("Username", "Error: A user with that name already exists.");
@@ -160,7 +160,7 @@ namespace SteamWeb.Controllers
         {
             if (!_context.UserType && !(_context.UserId == Id))
             {
-                ViewData["error"] = "Error: you do not have that permission";
+                ModelState.AddModelError(string.Empty, "Error: You do not have that permission");
                 return View("~/Views/Games/Index.cshtml");
             }
             User user = _session.Get<User>(Id);
@@ -177,22 +177,17 @@ namespace SteamWeb.Controllers
                 return View(editedUser);
             }
 
-            // [Ryan]: Here, we need to make sure that there is not already another game with the same title but different ID.
-            // If we just checked for games with the same title, we would find the one that we are currently editing!!
             User maybeUser = _session.Query<User>()
                 .Where(u => u.Username == editedUser.Username && u.Id != editedUser.Id)
                 .SingleOrDefault();
             if (maybeUser != null)
             {
-                //TODO: Use ModelState.AddModelError here to add a model error to the Title field!
-                // This will make the error show up right next to the field that has the error, making it clearer to users of your system which part of their form they need to fix.
-                // ModelState.AddModelError(nameof(editedUser.Title), "A game with that title already exists.");
-                ViewData["error"] = "Error: A user with that name already exists";
+                ModelState.AddModelError(string.Empty, "Error: A user with that name already exists");
                 return View();
             }
             if (editedUser.Wallet >= (decimal) 1000.0)
             {
-                ViewData["error"] = "Error: Wallet amount cannot exceed $999.99";
+                ModelState.AddModelError(string.Empty, "Error: Wallet amount cannot exceed $999.99");
                 return View(editedUser);
             }
             User user = Mapper.Map<User>(editedUser);
